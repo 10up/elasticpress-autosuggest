@@ -1,6 +1,6 @@
 === ElasticPress Admin ===
 Contributors:      10up
-Donate link:       http://github.com/10up/ElasticPress-Admin
+Donate link:       http://github.com/10up/ElasticPress-Autosuggest
 Tags: 
 Requires at least: 3.5.1
 Tested up to:      3.5.1
@@ -8,7 +8,7 @@ Stable tag:        0.1.0
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
-Extend Elasticsearch coverage to replace Admin search.
+Extend ElasticPress's search inputs to display search suggestions
 
 == Description ==
 
