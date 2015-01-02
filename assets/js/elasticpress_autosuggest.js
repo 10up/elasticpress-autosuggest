@@ -73,7 +73,8 @@
 		 */
 		function esSearch( query ) {
 			// @todo fix this for multi-different search boxes on the same page
-			var url = esHost + '_suggest';
+			var esIndex = $epInput.data( 'es-index' ) + '/';
+			var url = esHost + esIndex + '_suggest';
 
 			// Fixes <=IE9 jQuery AJAX bug that prevents ajax request from firing
 			jQuery.support.cors = true;
