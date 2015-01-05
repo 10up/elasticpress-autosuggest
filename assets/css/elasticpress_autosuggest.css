@@ -11,7 +11,6 @@
     display: none;
     background: white;
     position: absolute;
-    top: 33px;
     border: 1px solid #ccc;
     -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -19,7 +18,7 @@
     width: 100%;
     z-index: 200; }
     .ep-autosuggest-container .ep-autosuggest > ul {
-      margin: 0;
+      margin: 0 !important;
       list-style: none; }
       .ep-autosuggest-container .ep-autosuggest > ul > li {
         font-family: sans-serif; }
@@ -31,9 +30,8 @@
           .ep-autosuggest-container .ep-autosuggest > ul > li > span:hover, .ep-autosuggest-container .ep-autosuggest > ul > li > span:active {
             background-color: #EEEEEE;
             text-decoration: none; }
-
-.selected {
-  background-color: #EEE;
-  text-decoration: none; }
+  .ep-autosuggest-container .selected {
+    background-color: #EEE;
+    text-decoration: none; }
 
 /*# sourceMappingURL=elasticpress_autosuggest.css.map */

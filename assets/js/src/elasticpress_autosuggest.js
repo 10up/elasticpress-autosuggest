@@ -11,7 +11,7 @@
 	var document = window.document;
 
 	jQuery( document ).ready( function( $ ) {
-		var $epInput       = $( 'form.searchform input#s' );
+		var $epInput       = $( 'input.elasticpress-autosuggest' );
 		var $epAutosuggest = $( '<div class="ep-autosuggest"><ul class="autosuggest-list"></ul></div>' );
 
 		/**

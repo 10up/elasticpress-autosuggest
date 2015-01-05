@@ -14,7 +14,6 @@
 		background: white;
 
 		position: absolute;
-		top: 33px;
 
 		border: 1px solid #ccc;
 
@@ -25,7 +24,7 @@
 		width: 100%;
 		z-index: 200;
 		> ul {
-			margin: 0;
+			margin: 0 !important;
 			list-style: none;
 			> li {
 				font-family: sans-serif;
@@ -43,9 +42,9 @@
 			}
 		}
 	}
-}
 
-.selected {
-	background-color: #EEE;
-	text-decoration: none;
+	.selected {
+		background-color: #EEE;
+		text-decoration: none;
+	}
 }
