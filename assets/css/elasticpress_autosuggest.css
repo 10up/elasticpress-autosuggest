@@ -5,9 +5,9 @@
  * Copyright (c) 2014 Aaron Holbrook, 10up
  * Licensed under the GPLv2+ license.
  */
-.elasticpress-autosuggest-container {
+.ep-autosuggest-container {
   position: relative; }
-  .elasticpress-autosuggest-container .elasticpress-autosuggest {
+  .ep-autosuggest-container .ep-autosuggest {
     display: none;
     background: white;
     position: absolute;
@@ -18,17 +18,17 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     width: 100%;
     z-index: 200; }
-    .elasticpress-autosuggest-container .elasticpress-autosuggest > ul {
+    .ep-autosuggest-container .ep-autosuggest > ul {
       margin: 0;
       list-style: none; }
-      .elasticpress-autosuggest-container .elasticpress-autosuggest > ul > li {
+      .ep-autosuggest-container .ep-autosuggest > ul > li {
         font-family: sans-serif; }
-        .elasticpress-autosuggest-container .elasticpress-autosuggest > ul > li > span {
+        .ep-autosuggest-container .ep-autosuggest > ul > li > span {
           display: block;
           color: #000;
           padding: 2px 10px;
           cursor: pointer; }
-          .elasticpress-autosuggest-container .elasticpress-autosuggest > ul > li > span:hover, .elasticpress-autosuggest-container .elasticpress-autosuggest > ul > li > span:active {
+          .ep-autosuggest-container .ep-autosuggest > ul > li > span:hover, .ep-autosuggest-container .ep-autosuggest > ul > li > span:active {
             background-color: #EEEEEE;
             text-decoration: none; }
 

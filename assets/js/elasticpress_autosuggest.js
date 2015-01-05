@@ -72,8 +72,8 @@
 		 * @returns AJAX object request
 		 */
 		function esSearch( query ) {
-			// @todo fix this for multi-different search boxes on the same page
-			var esIndex = $epInput.data( 'es-index' ) + '/';
+			// @todo support multiple different post type search boxes on the same page
+			var esIndex = window.ElasticPressAutoSuggest.index + '/';
 			var url = esHost + esIndex + '_suggest';
 
 			// Fixes <=IE9 jQuery AJAX bug that prevents ajax request from firing
@@ -252,7 +252,7 @@
 				var val = $localInput.val();
 				var query;
 				var request;
-				var postType = $localInput.data( 'es-post-type' );
+				var postType = window.ElasticPressAutoSuggest.postType;
 
 				if ( val.length >= 2 ) {
 					query = buildSearchQuery( val, postType );

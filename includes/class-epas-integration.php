@@ -10,7 +10,7 @@ class EPAS_Integration {
 	public function __construct() { }
 
 	/**
-	 *
+	 * Add actions and filters
 	 */
 	public function setup() {
 
@@ -19,6 +19,9 @@ class EPAS_Integration {
 		add_filter( 'ep_post_sync_args', array( $this, 'filter_term_suggest' ), 10, 2 );
 	}
 
+	/**
+	 * Enqueue our autosuggest script
+	 */
 	public function enqueue_scripts() {
 		$postfix = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? '' : '.min';
 
@@ -30,14 +33,40 @@ class EPAS_Integration {
 				EPAS_VERSION,
 				true
 			);
+
+			wp_enqueue_style(
+				'elasticpress-autosuggest',
+				EPAS_URL . "assets/css/elasticpress_autosuggest{$postfix}.css",
+				array(),
+				EPAS_VERSION
+			);
+
+			// Output some variables for our JS to use - namely the index name and the post type to use for suggestions
+			wp_localize_script( 'elasticpress-autosuggest', 'ElasticPressAutoSuggest', array(
+				'index' => ep_get_index_name( get_current_blog_id() ),
+				'postType' => apply_filters( 'epas_term_suggest_post_type', 'all' ),
+			) );
 		}
 	}
 
+	/**
+	 * Add term suggestions to be indexed
+	 *
+	 * @param $post_args
+	 * @param $post_id
+	 *
+	 * @return mixed
+	 */
 	public function filter_term_suggest( $post_args, $post_id ) {
 		$post = get_post( $post_id );
 
 		if ( ! empty( $post ) && ! is_wp_error( $post ) ) {
 			$suggest = $this->get_term_suggestions( $post_args, $post );
+
+			// Add suggestion to the 'all' set
+			$post_args['term_suggest_all'] = $suggest;
+
+			// Add suggestion to the post type limited set
 			if ( ! empty( $post->post_type ) && ! empty( $suggest ) ) {
 				$post_args[ 'term_suggest_' . $post->post_type ] = $suggest;
 			}
