@@ -147,7 +147,8 @@
 
 			// Bind items to auto-fill search box and submit form
 			$( '.autosuggest-item' ).on( 'click', function( event ) {
-				selectAutosuggestItem( $localInput, event.srcElement.innerText );
+				var autosuggest_data = $(this).data('search');
+				selectAutosuggestItem( $localInput, autosuggest_data );
 				submitSearchForm( $localInput );
 			} );
 
