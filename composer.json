@@ -2,7 +2,7 @@
     "name": "10up/elasticsearch-autosuggest",
     "description": "Extend ElasticPress's search inputs to display search suggestions",
     "type": "wordpress-plugin",
-    "license": "MIT",
+    "license": "GPLv2",
     "minimum-stability": "dev",
     "require": {}
 }

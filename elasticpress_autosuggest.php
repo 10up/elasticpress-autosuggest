@@ -29,54 +29,149 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-/**
- * Built using grunt-wp-plugin
- * Copyright (c) 2013 10up, LLC
- * https://github.com/10up/grunt-wp-plugin
- */
+define( 'EPAS_VERSION', '0.1.0' );
+define( 'EPAS_URL',     plugin_dir_url( __FILE__ ) );
 
 /**
- * This plugin requires ElasticPress
- * http://github.com/10up/ElasticPress
+ * Output feature box summary
+ * 
+ * @since 2.3
+ */
+function epas_feature_box_summary() {
+	?>
+	<p><?php esc_html_e( 'Add autosuggest to ElasticPress powered search fields.', 'elasticpress' ); ?></p>
+	<?php
+}
+
+/**
+ * Output feature box long
+ * 
+ * @since 2.3
+ */
+function epas_feature_box_long() {
+	?>
+	<p><?php esc_html_e( 'Autosuggest is a very powerful search feature. As a user types a search query, they are automatically suggested items. Autosuggest dramatically increases that users will find what they are looking for on your site improving the overall experience.', 'elasticpress' ); ?></p>
+	<?php
+}
+
+/**
+ * Setup feature functionality
  *
- * Deactivate if ElasticPress is not running
+ * @since  2.3
  */
-function epas_activate_check() {
-	if ( class_exists( 'EP_ElasticPress' ) ) {
-
-		// Useful global constants
-		define( 'EPAS_VERSION', '0.1.0' );
-		define( 'EPAS_URL',     plugin_dir_url( __FILE__ ) );
-		define( 'EPAS_PATH',    dirname( __FILE__ ) . '/' );
-
-		require_once( EPAS_PATH . 'includes/class-epas-integration.php' );
-	} else {
-
-		// ElasticPress was unable to be found, deactivate plugin
-		// @todo need to think through use cases here - if we have subsites activated, different admin notices
-		// @todo also - need to think through dependency situation for network/subsites
-		add_action( 'network_admin_notices', 'epas_deactivate_dependency_requirement' );
-		add_action( 'admin_notices', 'epas_deactivate_dependency_requirement' );
-
-		add_action( 'admin_init', 'epas_deactivate_plugin' );
-	}
-}
-add_action( 'plugins_loaded', 'epas_activate_check', 8 );
-
-/**
- * Display notice requiring main ElasticPress requirement
- */
-function epas_deactivate_dependency_requirement() {
-	echo '<div class="error"><p><strong>ElasticPress Autosuggest</strong> requires <a href="http://github.com/10up/ElasticPress">ElasticPress</a>; the plug-in has been <strong>deactivated</strong>.</p></div>';
-
-	if ( isset( $_GET['activate'] ) ) {
-		unset( $_GET['activate'] );
-	}
+function epas_setup() {
+	add_action( 'wp_enqueue_scripts', 'epas_enqueue_scripts' );
+	add_filter( 'ep_post_sync_args', 'epas_filter_term_suggest', 10, 2 );
 }
 
 /**
- * Action to deactivate plugin. Used if main ElasticPress plugin is not currently active
+ * Enqueue our autosuggest script
  */
-function epas_deactivate_plugin() {
-	deactivate_plugins( plugin_basename( __FILE__ ) );
+function epas_enqueue_scripts() {
+	$postfix = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? '' : '.min';
+
+	if ( ! is_admin() ) {
+		wp_enqueue_script(
+			'elasticpress-autosuggest',
+			EPAS_URL . "assets/js/elasticpress_autosuggest{$postfix}.js",
+			array( 'jquery' ),
+			EPAS_VERSION,
+			true
+		);
+
+		wp_enqueue_style(
+			'elasticpress-autosuggest',
+			EPAS_URL . "assets/css/elasticpress_autosuggest{$postfix}.css",
+			array(),
+			EPAS_VERSION
+		);
+
+		// Output some variables for our JS to use - namely the index name and the post type to use for suggestions
+		wp_localize_script( 'elasticpress-autosuggest', 'ElasticPressAutoSuggest', array(
+			'index' => ep_get_index_name( get_current_blog_id() ),
+			'postType' => apply_filters( 'epas_term_suggest_post_type', 'all' ),
+		) );
+	}
 }
+
+/**
+ * Add term suggestions to be indexed
+ *
+ * @param $post_args
+ * @param $post_id
+ * @since  2.3
+ * @return mixed
+ */
+function epas_filter_term_suggest( $post_args, $post_id ) {
+	$post = get_post( $post_id );
+
+	if ( ! empty( $post ) && ! is_wp_error( $post ) ) {
+		$suggest = epas_get_term_suggestions( $post_args, $post );
+
+		// Add suggestion to the 'all' set
+		$post_args['term_suggest_all'] = $suggest;
+
+		// Add suggestion to the post type limited set
+		if ( ! empty( $post->post_type ) && ! empty( $suggest ) ) {
+			$post_args[ 'term_suggest_' . $post->post_type ] = $suggest;
+		}
+	}
+
+	return $post_args;
+}
+
+/**
+ * Get term suggestions for a given post based on terms in the taxonomies as well as the post title
+ * Filterable for more options/suggestions
+ *
+ * @param $post
+ * @since  2.3
+ * @return mixed|void
+ */
+function epas_get_term_suggestions( $post_args, $post ) {
+	$suggest   = array();
+	$suggest[] = $post_args['post_title'];
+	if ( ! empty( $post_args['terms'] ) ) {
+		foreach ( $post_args['terms'] as $taxonomy ) {
+			foreach ( $taxonomy as $term ) {
+				$suggest[] = $term['name'];
+			}
+		}
+	}
+
+	return apply_filters( 'epas_term_suggest', $suggest, $post_args, $post );
+}
+
+/**
+ * Determine WC feature reqs status
+ *
+ * @param  EP_Feature_Requirements_Status $status
+ * @since  2.3
+ * @return EP_Feature_Requirements_Status
+ */
+function epas_requirements_status( $status ) {
+	$host = ep_get_host();
+
+	if ( ! preg_match( '#elasticpress\.io#i', $host ) ) {
+		$status->code = 1;
+		$status->message = __( "You aren't using <a href='https://elasticpress.io'>ElasticPress.io</a> so we can't be sure your Elasticsearch instance is secure.", 'elasticpress' );
+	}
+
+	return $status;
+}
+
+/**
+ * Register the feature
+ *
+ * @since  2.3
+ */
+add_action( 'ep_setup_features', function() {
+	ep_register_feature( 'autosuggest', array(
+		'title' => 'Autosuggest',
+		'setup_cb' => 'epas_setup',
+		'feature_box_summary_cb' => 'epas_feature_box_summary',
+		'feature_box_long_cb' => 'epas_feature_box_long',
+		'requires_install_reindex' => false,
+		'requirements_status_cb' => 'epas_requirements_status',
+	) );
+} );
