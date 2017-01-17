@@ -68,30 +68,31 @@ function epas_setup() {
  * Enqueue our autosuggest script
  */
 function epas_enqueue_scripts() {
-	$postfix = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? '' : '.min';
 
-	if ( ! is_admin() ) {
-		wp_enqueue_script(
-			'elasticpress-autosuggest',
-			EPAS_URL . "assets/js/elasticpress_autosuggest{$postfix}.js",
-			array( 'jquery' ),
-			EPAS_VERSION,
-			true
-		);
+	$js_url = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? EPAS_URL . 'assets/js/src/elasticpress_autosuggest.js' : EPAS_URL . 'assets/js/elasticpress_autosuggest.min.js';
+	$css_url = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? EPAS_URL . 'assets/css/elasticpress_autosuggest.css' : EPAS_URL . 'assets/css/elasticpress_autosuggest.min.css';
 
-		wp_enqueue_style(
-			'elasticpress-autosuggest',
-			EPAS_URL . "assets/css/elasticpress_autosuggest{$postfix}.css",
-			array(),
-			EPAS_VERSION
-		);
+	wp_enqueue_script(
+		'elasticpress-autosuggest',
+		$js_url,
+		array( 'jquery' ),
+		EPAS_VERSION,
+		true
+	);
 
-		// Output some variables for our JS to use - namely the index name and the post type to use for suggestions
-		wp_localize_script( 'elasticpress-autosuggest', 'ElasticPressAutoSuggest', array(
-			'index' => ep_get_index_name( get_current_blog_id() ),
-			'postType' => apply_filters( 'epas_term_suggest_post_type', 'all' ),
-		) );
-	}
+	wp_enqueue_style(
+		'elasticpress-autosuggest',
+		$css_url,
+		array(),
+		EPAS_VERSION
+	);
+
+	// Output some variables for our JS to use - namely the index name and the post type to use for suggestions
+	wp_localize_script( 'elasticpress-autosuggest', 'epas', array(
+		'index' => ep_get_index_name( get_current_blog_id() ),
+		'host'  => ep_get_host(),
+		'postType' => apply_filters( 'epas_term_suggest_post_type', 'all' ),
+	) );
 }
 
 /**

@@ -3,22 +3,6 @@ module.exports = function( grunt ) {
 	// Project configuration
 	grunt.initConfig( {
 		pkg:    grunt.file.readJSON( 'package.json' ),
-		concat: {
-			options: {
-				stripBanners: true,
-				banner: '/*! <%= pkg.title %> - v<%= pkg.version %>\n' +
-					' * <%= pkg.homepage %>\n' +
-					' * Copyright (c) <%= grunt.template.today("yyyy") %>;' +
-					' * Licensed GPLv2+' +
-					' */\n'
-			},
-			elasticpress_admin: {
-				src: [
-					'assets/js/src/elasticpress_autosuggest.js'
-				],
-				dest: 'assets/js/elasticpress_autosuggest.js'
-			}
-		},
 		jshint: {
 			all: [
 				'Gruntfile.js',
@@ -44,14 +28,15 @@ module.exports = function( grunt ) {
 					"$": false,
 					"jQuery": false,
 					"_": false,
-					"window": false
+					"window": false,
+					"epas": false
 				}
 			}		
 		},
 		uglify: {
 			all: {
 				files: {
-					'assets/js/elasticpress_autosuggest.min.js': ['assets/js/elasticpress_autosuggest.js']
+					'assets/js/elasticpress_autosuggest.min.js': ['assets/js/src/elasticpress_autosuggest.js']
 				},
 				options: {
 					banner: '/*! <%= pkg.title %> - v<%= pkg.version %>\n' +
@@ -64,9 +49,6 @@ module.exports = function( grunt ) {
 					}
 				}
 			}
-		},
-		test:   {
-			files: ['assets/js/test/**/*.js']
 		},
 		
 		sass:   {
@@ -107,68 +89,23 @@ module.exports = function( grunt ) {
 			
 			scripts: {
 				files: ['assets/js/src/**/*.js', 'assets/js/vendor/**/*.js'],
-				tasks: ['jshint', 'concat', 'uglify'],
+				tasks: ['jshint', 'uglify'],
 				options: {
 					debounceDelay: 500
 				}
 			}
-		},
-		clean: {
-			main: ['release/<%= pkg.version %>']
-		},
-		copy: {
-			// Copy the plugin to a versioned release directory
-			main: {
-				src:  [
-					'**',
-					'!node_modules/**',
-					'!release/**',
-					'!.git/**',
-					'!.sass-cache/**',
-					'!css/src/**',
-					'!js/src/**',
-					'!img/src/**',
-					'!Gruntfile.js',
-					'!package.json',
-					'!.gitignore',
-					'!.gitmodules'
-				],
-				dest: 'release/<%= pkg.version %>/'
-			}		
-		},
-		compress: {
-			main: {
-				options: {
-					mode: 'zip',
-					archive: './release/elasticpress_autosuggest.<%= pkg.version %>.zip'
-				},
-				expand: true,
-				cwd: 'release/<%= pkg.version %>/',
-				src: ['**/*'],
-				dest: 'elasticpress_autosuggest/'
-			}		
 		}
 	} );
 	
 	// Load other tasks
 	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	
 	grunt.loadNpmTasks('grunt-contrib-sass');
-	
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks( 'grunt-contrib-clean' );
-	grunt.loadNpmTasks( 'grunt-contrib-copy' );
-	grunt.loadNpmTasks( 'grunt-contrib-compress' );
 	
 	// Default task.
-	
-	grunt.registerTask( 'default', ['jshint', 'concat', 'uglify', 'sass', 'cssmin'] );
-	
-	
-	grunt.registerTask( 'build', ['default', 'clean', 'copy', 'compress'] );
+	grunt.registerTask( 'default', ['jshint', 'uglify', 'sass', 'cssmin'] );
 
 	grunt.util.linefeed = '\n';
 };
