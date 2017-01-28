@@ -8,6 +8,8 @@
 ( function( $ ) {
 	'use strict';
 
+	epas.host = 'http://localhost:9200';
+
 	// No host/index set
 	if ( ! epas.host || '' === epas.host || ! epas.index || '' === epas.index ) {
 		return;
@@ -83,21 +85,18 @@
 	 */
 	function esSearch( query ) {
 		// @todo support multiple different post type search boxes on the same page
-		var url = epas.host + epas.index + '/_suggest';
+		var url = epas.host + '/' + epas.index + '/_suggest';
 
 		// Fixes <=IE9 jQuery AJAX bug that prevents ajax request from firing
 		jQuery.support.cors = true;
 
-		var request;
-		request = $.ajax( {
+		return $.ajax( {
 			url: url,
-			type: 'POST',
+			type: 'post',
 			dataType: 'json',
 			crossDomain: true,
 			data: JSON.stringify( query )
 		} );
-
-		return request;
 	}
 
 	/**
@@ -107,15 +106,14 @@
 	 * @return void
 	 */
 	function updateAutosuggestBox( options, $localInput ) {
-		var i;
-		var $localESContainer = $localInput.closest( '.ep-autosuggest-container' ).find( '.ep-autosuggest' );
+		var i,
+			itemString,
+			$localESContainer = $localInput.closest( '.ep-autosuggest-container' ).find( '.ep-autosuggest' ),
+			$localSuggestList = $localESContainer.find( '.autosuggest-list' );
 
-		var $localSuggestList = $localESContainer.find( '.autosuggest-list' );
 		$localSuggestList.empty();
 
-		var itemString;
-
-		// Unbind potentially previously set items
+		// Don't listen to potentially previously set items
 		$( '.autosuggest-item' ).off();
 
 		if ( options.length > 0 ) {
@@ -130,14 +128,15 @@
 			$( itemString ).appendTo( $localSuggestList );
 		}
 
-		// Bind items to auto-fill search box and submit form
+		// Listen to items to auto-fill search box and submit form
 		$( '.autosuggest-item' ).on( 'click', function( event ) {
 			selectAutosuggestItem( $localInput, event.srcElement.innerText );
 			submitSearchForm( $localInput );
 		} );
 
-		$localInput.unbind( 'keydown' );
-		// Bind the input for up and down navigation between autosuggest items
+		$localInput.off( 'keydown' );
+
+		// Listen to the input for up and down navigation between autosuggest items
 		$localInput.on( 'keydown', function( event ) {
 			if ( event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 13 ) {
 				var $results = $localInput.closest( '.ep-autosuggest-container' ).find( '.autosuggest-list li' );
@@ -224,7 +223,7 @@
 	/**
 	 * Singular bindings for up and down to prevent normal actions so we can use them to navigate
 	 * our autosuggest list
-	 * Bind the escape key to close the autosuggest box
+	 * Listen to the escape key to close the autosuggest box
 	 */
 	$( $epInput ).each( function( key, value ) {
 		$( value ).on( 'keyup keydown keypress', function( event ) {
@@ -257,9 +256,11 @@
 			if ( val.length >= 2 ) {
 				query = buildSearchQuery( val, postType );
 				request = esSearch( query );
+
 				request.done( function( response ) {
 					if ( response._shards.successful > 0 ) {
 						var options = response['post-suggest'][0]['options'];
+
 						if ( 0 === options.length ) {
 							hideAutosuggestBox();
 						} else {

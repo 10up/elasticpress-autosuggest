@@ -39,7 +39,7 @@ define( 'EPAS_URL',     plugin_dir_url( __FILE__ ) );
  */
 function epas_feature_box_summary() {
 	?>
-	<p><?php esc_html_e( 'Add autosuggest to ElasticPress powered search fields.', 'elasticpress' ); ?></p>
+	<p><?php esc_html_e( 'Add autosuggest to ElasticPress powered search fields on the front end.', 'elasticpress' ); ?></p>
 	<?php
 }
 
@@ -50,7 +50,7 @@ function epas_feature_box_summary() {
  */
 function epas_feature_box_long() {
 	?>
-	<p><?php esc_html_e( 'Autosuggest is a very powerful search feature. As a user types a search query, they are automatically suggested items. Autosuggest dramatically increases that users will find what they are looking for on your site improving the overall experience.', 'elasticpress' ); ?></p>
+	<p><?php esc_html_e( 'Autosuggest is a very powerful search feature. As a user types a search query, they are automatically suggested items. Autosuggest dramatically increases that users will find what they are looking for on your site, improving overall experience.', 'elasticpress' ); ?></p>
 	<?php
 }
 
@@ -69,8 +69,8 @@ function epas_setup() {
  */
 function epas_enqueue_scripts() {
 
-	$js_url = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? EPAS_URL . 'assets/js/src/elasticpress_autosuggest.js' : EPAS_URL . 'assets/js/elasticpress_autosuggest.min.js';
-	$css_url = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? EPAS_URL . 'assets/css/elasticpress_autosuggest.css' : EPAS_URL . 'assets/css/elasticpress_autosuggest.min.css';
+	$js_url = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? EPAS_URL . 'assets/js/src/elasticpress-autosuggest.js' : EPAS_URL . 'assets/js/elasticpress-autosuggest.min.js';
+	$css_url = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? EPAS_URL . 'assets/css/elasticpress-autosuggest.css' : EPAS_URL . 'assets/css/elasticpress-autosuggest.min.css';
 
 	wp_enqueue_script(
 		'elasticpress-autosuggest',
@@ -90,7 +90,7 @@ function epas_enqueue_scripts() {
 	// Output some variables for our JS to use - namely the index name and the post type to use for suggestions
 	wp_localize_script( 'elasticpress-autosuggest', 'epas', array(
 		'index' => ep_get_index_name( get_current_blog_id() ),
-		'host'  => ep_get_host(),
+		'host'  => apply_filters( 'epas_host', ep_get_host() ),
 		'postType' => apply_filters( 'epas_term_suggest_post_type', 'all' ),
 	) );
 }

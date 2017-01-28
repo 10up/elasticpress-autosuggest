@@ -36,7 +36,7 @@ module.exports = function( grunt ) {
 		uglify: {
 			all: {
 				files: {
-					'assets/js/elasticpress_autosuggest.min.js': ['assets/js/src/elasticpress_autosuggest.js']
+					'assets/js/elasticpress-autosuggest.min.js': ['assets/js/src/elasticpress-autosuggest.js']
 				},
 				options: {
 					banner: '/*! <%= pkg.title %> - v<%= pkg.version %>\n' +
@@ -54,7 +54,7 @@ module.exports = function( grunt ) {
 		sass:   {
 			all: {
 				files: {
-					'assets/css/elasticpress_autosuggest.css': 'assets/css/sass/elasticpress_autosuggest.scss'
+					'assets/css/elasticpress-autosuggest.css': 'assets/css/sass/elasticpress-autosuggest.scss'
 				}
 			}
 		},
@@ -71,7 +71,7 @@ module.exports = function( grunt ) {
 				expand: true,
 				
 				cwd: 'assets/css/',				
-				src: ['elasticpress_autosuggest.css'],
+				src: ['elasticpress-autosuggest.css'],
 				
 				dest: 'assets/css/',
 				ext: '.min.css'
@@ -105,7 +105,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	
 	// Default task.
-	grunt.registerTask( 'default', ['jshint', 'uglify', 'sass', 'cssmin'] );
+	grunt.registerTask( 'default', ['uglify', 'jshint', 'sass', 'cssmin'] );
 
 	grunt.util.linefeed = '\n';
 };
