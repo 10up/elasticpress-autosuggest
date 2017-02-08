@@ -61,7 +61,55 @@ function epas_feature_box_long() {
  */
 function epas_setup() {
 	add_action( 'wp_enqueue_scripts', 'epas_enqueue_scripts' );
+	add_filter( 'ep_config_mapping', 'epas_completion_mapping' );
 	add_filter( 'ep_post_sync_args', 'epas_filter_term_suggest', 10, 2 );
+}
+
+/**
+ * Add mapping for completion fields
+ * 
+ * @param  array $mapping
+ * @return array
+ */
+function epas_completion_mapping( $mapping ) {
+	$mapping['mappings']['post']['properties']['post_title']['fields']['completion'] = array(
+		'type' => 'completion',
+		'analyzer' => 'simple',
+		'search_analyzer' => 'simple',
+	);
+
+	$mapping['mappings']['post']['properties']['term_suggest'] = array(
+		'type' => 'completion',
+		'analyzer' => 'simple',
+		'search_analyzer' => 'simple',
+	);
+
+	return $mapping;
+}
+
+/**
+ * Add term suggestions to be indexed
+ *
+ * @param $post_args
+ * @param $post_id
+ * @return array
+ */
+function epas_filter_term_suggest( $post_args, $post_id ) {
+	$suggest = array();
+
+	if ( ! empty( $post_args['terms'] ) ) {
+		foreach ( $post_args['terms'] as $taxonomy ) {
+			foreach ( $taxonomy as $term ) {
+				$suggest[] = $term['name'];
+			}
+		}
+	}
+
+	if ( ! empty( $suggest ) ) {
+		$post_args['term_suggest'] = $suggest;
+	}
+
+	return $post_args;
 }
 
 /**
@@ -93,54 +141,6 @@ function epas_enqueue_scripts() {
 		'host'  => apply_filters( 'epas_host', ep_get_host() ),
 		'postType' => apply_filters( 'epas_term_suggest_post_type', 'all' ),
 	) );
-}
-
-/**
- * Add term suggestions to be indexed
- *
- * @param $post_args
- * @param $post_id
- * @since  2.3
- * @return mixed
- */
-function epas_filter_term_suggest( $post_args, $post_id ) {
-	$post = get_post( $post_id );
-
-	if ( ! empty( $post ) && ! is_wp_error( $post ) ) {
-		$suggest = epas_get_term_suggestions( $post_args, $post );
-
-		// Add suggestion to the 'all' set
-		$post_args['term_suggest_all'] = $suggest;
-
-		// Add suggestion to the post type limited set
-		if ( ! empty( $post->post_type ) && ! empty( $suggest ) ) {
-			$post_args[ 'term_suggest_' . $post->post_type ] = $suggest;
-		}
-	}
-
-	return $post_args;
-}
-
-/**
- * Get term suggestions for a given post based on terms in the taxonomies as well as the post title
- * Filterable for more options/suggestions
- *
- * @param $post
- * @since  2.3
- * @return mixed|void
- */
-function epas_get_term_suggestions( $post_args, $post ) {
-	$suggest   = array();
-	$suggest[] = $post_args['post_title'];
-	if ( ! empty( $post_args['terms'] ) ) {
-		foreach ( $post_args['terms'] as $taxonomy ) {
-			foreach ( $taxonomy as $term ) {
-				$suggest[] = $term['name'];
-			}
-		}
-	}
-
-	return apply_filters( 'epas_term_suggest', $suggest, $post_args, $post );
 }
 
 /**

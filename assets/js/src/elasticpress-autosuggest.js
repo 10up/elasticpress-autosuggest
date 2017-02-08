@@ -66,10 +66,18 @@
 		}
 		// TODO: check comma separated
 		var query = {
-			'post-suggest': {
-				text: searchText,
-				completion: {
-					field: "term_suggest_" + postType
+			suggest: {
+				'post-suggest': {
+					text: searchText,
+					completion: {
+						field: 'post_title.completion'
+					}
+				},
+				'term-suggest': {
+					text: searchText,
+					completion: {
+						field: 'term_suggest'
+					}
 				}
 			}
 		};
@@ -85,7 +93,7 @@
 	 */
 	function esSearch( query ) {
 		// @todo support multiple different post type search boxes on the same page
-		var url = epas.host + '/' + epas.index + '/_suggest';
+		var url = epas.host + '/' + epas.index + '/post/_search';
 
 		// Fixes <=IE9 jQuery AJAX bug that prevents ajax request from firing
 		jQuery.support.cors = true;
@@ -123,7 +131,7 @@
 		}
 
 		for ( i = 0; i < options.length; ++i ) {
-			var item = options[i].text.toLowerCase();
+			var item = options[i].toLowerCase();
 			itemString = '<li><span class="autosuggest-item" data-search="' + item + '">' + item + '</span></li>';
 			$( itemString ).appendTo( $localSuggestList );
 		}
@@ -259,12 +267,22 @@
 
 				request.done( function( response ) {
 					if ( response._shards.successful > 0 ) {
-						var options = response['post-suggest'][0]['options'];
+						var titleOptions = response.suggest['post-suggest'][0]['options'];
+						var termOptions = response.suggest['term-suggest'][0]['options'];
 
-						if ( 0 === options.length ) {
+						var options = titleOptions.concat( termOptions );
+						var filteredOptions = [];
+
+						$.each( options, function( index, element ){
+							if( $.inArray( element.text, filteredOptions ) === -1 ) {
+								filteredOptions.push( element.text );
+							}
+						} );
+
+						if ( 0 === filteredOptions.length ) {
 							hideAutosuggestBox();
 						} else {
-							updateAutosuggestBox( options, $localInput );
+							updateAutosuggestBox( filteredOptions, $localInput );
 						}
 					} else {
 						hideAutosuggestBox();
