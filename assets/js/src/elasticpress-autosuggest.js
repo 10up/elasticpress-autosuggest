@@ -8,8 +8,6 @@
 ( function( $ ) {
 	'use strict';
 
-	epas.host = 'http://localhost:9200';
-
 	// No host/index set
 	if ( ! epas.host || '' === epas.host || ! epas.index || '' === epas.index ) {
 		return;
