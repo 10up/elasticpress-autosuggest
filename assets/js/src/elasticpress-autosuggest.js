@@ -299,4 +299,12 @@
 		}, 100 ) );
 	} );
 
+	// Publically expose API
+	window.epasAPI = {
+		hideAutosuggestBox: hideAutosuggestBox,
+		updateAutosuggestBox: updateAutosuggestBox,
+		esSearch: esSearch,
+		buildSearchQuery: buildSearchQuery
+	};
+
 } )( jQuery );
