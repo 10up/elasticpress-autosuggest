@@ -172,7 +172,7 @@ add_action( 'ep_setup_features', function() {
 		'setup_cb' => 'epas_setup',
 		'feature_box_summary_cb' => 'epas_feature_box_summary',
 		'feature_box_long_cb' => 'epas_feature_box_long',
-		'requires_install_reindex' => false,
+		'requires_install_reindex' => true,
 		'requirements_status_cb' => 'epas_requirements_status',
 	) );
 } );
