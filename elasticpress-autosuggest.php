@@ -29,7 +29,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-define( 'EPAS_VERSION', '0.1.1' );
+define( 'EPAS_VERSION', '0.1.2' );
 define( 'EPAS_URL',     plugin_dir_url( __FILE__ ) );
 
 /**
