@@ -156,8 +156,10 @@
 					case 40: // Down
 						if ( ! $results.hasClass( 'selected' ) ) {
 							$results.first().addClass( 'selected' );
+							$next = $results.first();
+						} else {
+							$next = $current.next();
 						}
-						$next = $current.next();
 						break;
 					case 13: // Enter
 						if ( $results.hasClass( 'selected' ) ) {
@@ -175,6 +177,8 @@
 				if ( $next.is( 'li' ) ) {
 					$current.removeClass( 'selected' );
 					$next.addClass( 'selected' );
+				} else {
+					$results.removeClass( 'selected' );
 				}
 
 				// keep cursor from heading back to the beginning in the input
