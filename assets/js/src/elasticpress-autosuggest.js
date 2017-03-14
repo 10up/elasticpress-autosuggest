@@ -164,6 +164,9 @@
 							selectAutosuggestItem( $localInput, $current.find('span').text() );
 							submitSearchForm( $localInput );
 							return false;
+						} else {
+							// No item selected
+							return;
 						}
 						break;
 				}
