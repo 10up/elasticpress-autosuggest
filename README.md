@@ -1,6 +1,8 @@
 ElasticPress Autosuggest
 ===========================
 
+*Warning: This plugin exposes your Elasticsearch publically. If not properly secured and used in conjunction with the Protected Content function, private content can be leaked publically.*
+
 Extend ElasticPress's search inputs to display search suggestions
 
 ## Setup
