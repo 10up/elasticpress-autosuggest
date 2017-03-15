@@ -63,6 +63,23 @@ function epas_setup() {
 	add_action( 'wp_enqueue_scripts', 'epas_enqueue_scripts' );
 	add_filter( 'ep_config_mapping', 'epas_completion_mapping' );
 	add_filter( 'ep_post_sync_args', 'epas_filter_term_suggest', 10, 2 );
+	add_filter( 'ep_post_sync_args_post_prepare_meta', 'epas_no_blank_title', 10, 2 );
+}
+
+/**
+ * Blank titles dont work with the completion mapping type
+ *
+ * @param  array $post_args
+ * @param  int $post_id
+ * @since  2.2
+ * @return array
+ */
+function epas_no_blank_title( $post_args, $post_id ) {
+	if ( empty( $post_args['post_title'] ) ) {
+		unset( $post_args['post_title'] );
+	}
+
+	return $post_args;
 }
 
 /**
